@@ -1,10 +1,12 @@
 # This is a sample Python script.
+import random
 from math import floor
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import numpy as np
 from numpy import array, int32
+from copy import copy, deepcopy
 import matplotlib.pyplot as plt
 
 
@@ -152,6 +154,46 @@ def equalize_image(img):
     # Press the green button in the gutter to run the script.
 
 
+# creating function that add noise to the given image
+def noisify_image(img):
+    lines = img.shape[0]
+    columns = img.shape[1]
+    for i in range(lines):
+        for j in range(columns):
+            value = random.randint(0, 20)
+            if value == 0:
+                img[i][j] = 0
+            if value == 20:
+                img[i][j] = 255
+            print(value)
+    write_image_pgm(img, "noisyImage")
+    return img
+
+
+def calculate_average_filter(index1, index2, img, mask_size):
+    mask_limit = mask_size // 2
+    res = 0
+    mask_value = 1 / mask_size
+    for i in range(index1 - mask_limit, index1 + mask_limit):
+        for j in range(index2 - mask_limit, index2 + mask_limit):
+            res += img[i][j] * mask_value
+    return res
+
+
+# applying average filter to an image
+def average_filter(img, mask_size):
+    lines = img.shape[0]
+    columns = img.shape[1]
+    mask_limit = mask_size // 2
+    matrix_result = deepcopy(img)
+
+    for i in range(mask_limit, mask_size - mask_limit):
+        for j in range(mask_limit, mask_size - mask_limit):
+            matrix_result[i][j] = calculate_average_filter(i, j, img, mask_size)
+    write_image_pgm(img, "FilteredImage")
+    return matrix_result
+
+
 if __name__ == '__main__':
     # print_hi('PyCharm')
     image_matrix = read_image_pgm()
@@ -159,9 +201,10 @@ if __name__ == '__main__':
     # print('La moyenne : ', average_gris(image_matrix))
     # print('L’écart type : ', standard_deviation_gris(image_matrix))
     # print('Histogramme : ', histogram(image_matrix))
-    print('Histogramme cumulé : ', histogram_cumulated(image_matrix))
+    # print('Histogramme cumulé : ', histogram_cumulated(image_matrix))
     # print('pc : ', pc(image_matrix))
-    print('n1 : ', get_n1(image_matrix))
-    print('histo egalisé : ', equalize_image(image_matrix))
-
+    # print('n1 : ', get_n1(image_matrix))
+    # print('histo egalisé : ', equalize_image(image_matrix))
+    img_noisy = noisify_image(image_matrix)
+    #average_filter(img_noisy, 3)
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
